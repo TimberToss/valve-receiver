@@ -25,9 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
-import com.example.valvereceiver.Constants.CHARACTERISTIC_SEGMENT_UUID
 import com.example.valvereceiver.Constants.MY_TAG
 import com.example.valvereceiver.Constants.SERVICE_UUID
+import com.example.valvereceiver.Constants.allCharacteristics
 import com.example.valvereceiver.ui.theme.ValveReceiverTheme
 import java.util.*
 
@@ -76,15 +76,16 @@ class MainActivity : ComponentActivity() {
             value: ByteArray?
         ) {
             super.onCharacteristicReadRequest(device, requestId, offset, characteristic)
-            if (CHARACTERISTIC_SEGMENT_UUID == characteristic?.uuid) {
+            if (allCharacteristics.contains(characteristic?.uuid)) {
                 gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, null)
                 if (value != null) {
-                    val length = value.size
-                    val reversed = ByteArray(length)
-                    for (i in 0 until length) {
-                        reversed[i] = value[length - (i + 1)]
-                    }
-                    characteristic?.value = reversed
+//                    val length = value.size
+//                    val reversed = ByteArray(length)
+//                    for (i in 0 until length) {
+//                        reversed[i] = value[length - (i + 1)]
+//                    }
+//                    characteristic?.value = reversed
+                    characteristic?.value = value
                     for (dev in devices) {
                         gattServer.notifyCharacteristicChanged(dev, characteristic, false)
                     }
@@ -211,12 +212,9 @@ class MainActivity : ComponentActivity() {
             SERVICE_UUID,
             BluetoothGattService.SERVICE_TYPE_PRIMARY
         )
-        val writeCharacteristic = BluetoothGattCharacteristic(
-            CHARACTERISTIC_SEGMENT_UUID,
-            BluetoothGattCharacteristic.PROPERTY_WRITE,
-            BluetoothGattCharacteristic.PERMISSION_WRITE
-        )
-        service.addCharacteristic(writeCharacteristic)
+        allCharacteristics.map { it.createBaseWriteCharacteristic() }.forEach { characteristic ->
+            service.addCharacteristic(characteristic)
+        }
         gattServer.addService(service)
 //        val writeCharacteristic = BluetoothGattCharacteristic(
 //
@@ -275,6 +273,12 @@ class MainActivity : ComponentActivity() {
             Log.d(MY_TAG, "NOT Support BLUETOOTH_LE")
         }
     }
+
+    private fun UUID.createBaseWriteCharacteristic() = BluetoothGattCharacteristic(
+        this,
+        BluetoothGattCharacteristic.PROPERTY_WRITE,
+        BluetoothGattCharacteristic.PERMISSION_WRITE
+    )
 }
 
 @Composable
