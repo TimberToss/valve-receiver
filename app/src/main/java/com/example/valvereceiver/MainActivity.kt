@@ -25,14 +25,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
+import com.example.valvereceiver.Constants.CHARACTERISTIC_SEGMENT_UUID
+import com.example.valvereceiver.Constants.MY_TAG
+import com.example.valvereceiver.Constants.SERVICE_UUID
 import com.example.valvereceiver.ui.theme.ValveReceiverTheme
 import java.util.*
-
-
-val CLIENT_CONFIGURATION_DESCRIPTOR_UUID = UUID.fromString("a2edcd0c-dd15-11ec-9d64-0242ac120002")
-val CHARACTERISTIC_SEGMENT_UUID = UUID.fromString("f0dd21f8-dd14-11ec-9d64-0242ac120002")
-val SERVICE_UUID = UUID.fromString("e4205d54-dd14-11ec-9d64-0242ac120002")
-val MY_TAG = "MY_TAG"
 
 
 class MainActivity : ComponentActivity() {
